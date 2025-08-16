@@ -45,7 +45,7 @@ jobs:
       - name: Build & Push image
         env:
           ACR_REGISTRY: devopspruebatecylab.azurecr.io
-          ACR_REPOSITORY: spring-boot-docker
+          ACR_REPOSITORY: minimalapi
           IMAGE_TAG: ${{ needs.extract-version.outputs.app_version }}      
         run: |
           echo -e "\e[32mBuild componente\e[0m"
