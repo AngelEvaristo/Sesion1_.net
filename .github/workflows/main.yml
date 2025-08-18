@@ -77,4 +77,5 @@ jobs:
           docker ps -a
           echo -e "\e[32mdetener contendor\e[0m"
           docker ps
+          curl http://localhost:8080
 
