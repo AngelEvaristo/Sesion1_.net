@@ -75,6 +75,7 @@ jobs:
           docker stop mi-contenedor
           echo -e "\e[32mdetener contendor\e[0m"
           docker ps -a
+          docker logs mi-contenedor2-0
           echo -e "\e[32mdetener contendor\e[0m"
           docker ps
           curl http://localhost:8081
