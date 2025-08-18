@@ -19,7 +19,7 @@ WORKDIR /app
 COPY --from=build /out .
 
 # Expone el puerto en el que la aplicación escuchará
-EXPOSE 8080
+EXPOSE 8081
 
 # Comando para ejecutar la aplicación
 ENTRYPOINT ["dotnet", "MyMinimalApi.dll"]
