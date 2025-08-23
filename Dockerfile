@@ -18,9 +18,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 COPY --from=build /out .
 
-ENV ASPNETCORE_URLS=http://0.0.0.0:8081
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 # Expone el puerto en el que la aplicación escuchará
-EXPOSE 8081
+EXPOSE 8080
 
 # Comando para ejecutar la aplicación
 ENTRYPOINT ["dotnet", "MyMinimalApi.dll"]
