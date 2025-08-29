@@ -126,9 +126,9 @@ jobs:
           action: deploy
           private-cluster: true
           manifests: |
-              manifiestos/deployment.yaml
-              manifiestos/service.yaml
-              manifiestos/ingress.yaml
-              manifiestos/service.yaml
+              ./manifiestos/deployment.yaml
+              ./manifiestos/service.yaml
+              ./manifiestos/ingress.yaml
+              ./manifiestos/hpa.yaml
           images: |
               devopspruebatecylab.azurecr.io/minimalapi          
