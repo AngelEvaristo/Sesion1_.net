@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: holambco-deployment
+  namespace: mbco-reto-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: holambco
+  template:
+    metadata:
+      labels:
+        app: holambco
+    spec:
+      containers:
+      - name: holambco-container
+        image: devopspruebatecylab.azurecr.io/minimalapi:1.2.7
+        ports:
+        - containerPort: 8080
