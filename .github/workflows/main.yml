@@ -122,7 +122,6 @@ jobs:
         uses: Azure/k8s-deploy@v4
         with:
           action: deploy
-          manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
           private-cluster: true
           manifests: |
               manifiestos/deployment.yaml
