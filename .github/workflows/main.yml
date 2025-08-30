@@ -119,6 +119,11 @@ jobs:
           admin: 'false'
           use-kubelogin: 'true'
 
+      - name: Create namespace if not exists
+        run: |
+          kubectl get namespace mbco-reto-ns || kubectl create namespace mbco-reto-ns
+
+
       # Deploys application based on given manifest file
       - name: Deploys application
         uses: Azure/k8s-deploy@v4
