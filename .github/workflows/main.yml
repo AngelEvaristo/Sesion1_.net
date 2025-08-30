@@ -124,6 +124,7 @@ jobs:
         uses: Azure/k8s-deploy@v4
         with:
           action: deploy
+          namespace: mbco-reto-ns 
           manifests: |
               ./manifiestos/deployment.yaml
               ./manifiestos/service.yaml
