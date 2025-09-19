@@ -50,10 +50,8 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Run Tests with Coverage
-        run: dotnet test --no-build --configuration Release \
-               /p:CollectCoverage=true \
-               /p:CoverletOutputFormat=opencover \
-               /p:CoverletOutput=./TestResults/coverage.opencover.xml
+        run: dotnet test MyMinimalApi.Tests/MyMinimalApi.Tests.csproj --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/coverage.opencover.xml
+
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
