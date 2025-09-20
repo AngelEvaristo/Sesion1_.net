@@ -11,9 +11,9 @@ env:
   DEPLOYMENT_MANIFEST_PATH: "your-deployment-manifest-path"
 
 on:
-  push:
-    branches:
-      - main   
+#   push:
+#     branches: [ main ]
+  workflow_dispatch: {} 
 jobs:
 
   extract-version:
@@ -133,4 +133,5 @@ jobs:
               ./manifiestos/deployment.yaml
               ./manifiestos/service.yaml
               ./manifiestos/ingress.yaml
+
               ./manifiestos/hpa.yaml
