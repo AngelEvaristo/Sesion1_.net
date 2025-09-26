@@ -99,7 +99,7 @@ jobs:
 
       - name: Create namespace if not exists
         run: |
-          kubectl apply -f ./manifiestos/deployment.yaml
-          kubectl apply -f ./manifiestos/service.yaml
-          kubectl apply -f ./manifiestos/ingress.yaml
-          kubectl apply -f ./manifiestos/hpa.yaml
+          kubectl apply -n mbco-reto-ns -f ./manifiestos/deployment.yaml
+          kubectl apply -n mbco-reto-ns -f ./manifiestos/service.yaml
+          kubectl apply -n mbco-reto-ns -f ./manifiestos/ingress.yaml
+          kubectl apply -n mbco-reto-ns -f ./manifiestos/hpa.yaml
