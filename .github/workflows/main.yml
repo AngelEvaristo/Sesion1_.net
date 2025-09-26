@@ -64,81 +64,38 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      # - name: Configure ACR credentials
-      #   uses: azure/docker-login@v2
-      #   with:
-      #     login-server: devopspruebatecylab.azurecr.io # default: index.docker.io
-      #     username: ${{ secrets.AZURE_ACR_ACCESS_USER }}
-      #     password: ${{ secrets.AZURE_ACR_ACCESS_PASS }}  
+  deploy:
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    needs: [build-and-push]
+    steps:
+      # Checks out the repository this file is in
+      - uses: actions/checkout@v4
 
-      # - name: Build & Push image
-      #   env:
-      #     ACR_REGISTRY: devopspruebatecylab.azurecr.io
-      #     ACR_REPOSITORY: minimalapi
-      #     IMAGE_TAG: ${{ needs.extract-version.outputs.app_version }}      
-      #   run: |
-      #     echo -e "\e[32mBuild componente\e[0m"
-      #     docker build -t $ACR_REGISTRY/$ACR_REPOSITORY:$IMAGE_TAG .
-      #     echo -e "\e[32mPush componente\e[0m"
-      #     docker push $ACR_REGISTRY/$ACR_REPOSITORY:$IMAGE_TAG
+      # Logs in with your Azure credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ECR_ACCESS_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ECR_ACCESS_KEY }}
+          aws-region: us-east-1     
 
-      # - name: Check docker
-      #   env:
-      #     ACR_REGISTRY: devopspruebatecylab.azurecr.io
-      #     ACR_REPOSITORY: minimalapi
-      #     IMAGE_TAG: ${{ needs.extract-version.outputs.app_version }}      
-      #   run: |
-      #     echo -e "\e[32mBuild componente\e[0m"
-      #     docker build -t mi-app:1.0.0 .
-      #     docker build -t mi-app-bkp:1.0.0 . 
-      #     echo -e "\e[32mDockerimages\e[0m"
-      #     docker images              
-      #     echo -e "\e[32mVistazo general\e[0m"
-      #     docker ps -a 
-      #     echo -e "\e[32mInicializador...\e[0m"
-      #     docker run -d --name mi-contenedor -p 8080:8080 mi-app:1.0.0                        
-      #     echo -e "\e[32mVistazo general\e[0m"
-      #     docker ps -a  
-      #     sleep 20
-      #     echo -e "\e[32mdetener contendor\e[0m"
-      #     docker ps -a
-      #     echo -e "\e[32mps normal\e[0m"
-      #     docker ps
-      #     curl http://localhost:8080
+      # Use kubelogin to configure your kubeconfig for Azure auth
+      - name: Set up kubelogin for non-interactive login
+        uses: azure/use-kubelogin@v1
+        with:
+          kubelogin-version: 'v0.0.25'
 
+      - name: Update kube config
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name eks-cluster --region us-east-1
 
-  # deploy:
-  #   permissions:
-  #     actions: read
-  #     contents: read
-  #     id-token: write
-  #   runs-on: ubuntu-latest
-  #   needs: [build-and-push]
-  #   steps:
-  #     # Checks out the repository this file is in
-  #     - uses: actions/checkout@v4
-
-  #     # Logs in with your Azure credentials
-  #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ECR_ACCESS_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_ECR_ACCESS_KEY }}
-  #         aws-region: us-east-1     
-
-  #     # Use kubelogin to configure your kubeconfig for Azure auth
-  #     - name: Set up kubelogin for non-interactive login
-  #       uses: azure/use-kubelogin@v1
-  #       with:
-  #         kubelogin-version: 'v0.0.25'
-
-  #     - name: Update kube config
-  #       run: |
-  #         aws eks update-kubeconfig --region us-east-1 --name eks-cluster --region us-east-1
-
-  #     - name: Create namespace if not exists
-  #       run: |
-  #         kubectl apply -f ./manifiestos/deployment.yaml
-  #         kubectl apply -f ./manifiestos/service.yaml
-  #         kubectl apply -f ./manifiestos/ingress.yaml
-  #         kubectl apply -f ./manifiestos/hpa.yaml
+      - name: Create namespace if not exists
+        run: |
+          kubectl apply -f ./manifiestos/deployment.yaml
+          kubectl apply -f ./manifiestos/service.yaml
+          kubectl apply -f ./manifiestos/ingress.yaml
+          kubectl apply -f ./manifiestos/hpa.yaml

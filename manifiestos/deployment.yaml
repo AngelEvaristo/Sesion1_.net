@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: holambco-container
-        image: devopspruebatecylab.azurecr.io/minimalapi:1.2.7
+        image: 928362036580.dkr.ecr.us-east-1.amazonaws.com/devopsprueba:1.2.7
         ports:
         - containerPort: 8080
