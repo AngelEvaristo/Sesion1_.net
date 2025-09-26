@@ -95,6 +95,10 @@ jobs:
 
       - name: Create namespace if not exists
         run: |
+          kubectl get namespace mbco-reto-ns || kubectl create namespace mbco-reto-ns
+
+      - name: Create namespace if not exists
+        run: |
           kubectl apply -f ./manifiestos/deployment.yaml
           kubectl apply -f ./manifiestos/service.yaml
           kubectl apply -f ./manifiestos/ingress.yaml
