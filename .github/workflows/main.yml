@@ -50,88 +50,88 @@ jobs:
       #     username: ${{ secrets.AZURE_ACR_ACCESS_USER }}
       #     password: ${{ secrets.AZURE_ACR_ACCESS_PASS }}  
 
-      # - name: Build & Push image
-      #   env:
-      #     ACR_REGISTRY: devopspruebatecylab.azurecr.io
-      #     ACR_REPOSITORY: minimalapi
-      #     IMAGE_TAG: ${{ needs.extract-version.outputs.app_version }}      
-      #   run: |
-      #     echo -e "\e[32mBuild componente\e[0m"
-      #     docker build -t $ACR_REGISTRY/$ACR_REPOSITORY:$IMAGE_TAG .
-      #     echo -e "\e[32mPush componente\e[0m"
-      #     docker push $ACR_REGISTRY/$ACR_REPOSITORY:$IMAGE_TAG
-
-      # - name: Check docker
-      #   env:
-      #     ACR_REGISTRY: devopspruebatecylab.azurecr.io
-      #     ACR_REPOSITORY: minimalapi
-      #     IMAGE_TAG: ${{ needs.extract-version.outputs.app_version }}      
-      #   run: |
-      #     echo -e "\e[32mBuild componente\e[0m"
-      #     docker build -t mi-app:1.0.0 .
-      #     docker build -t mi-app-bkp:1.0.0 . 
-      #     echo -e "\e[32mDockerimages\e[0m"
-      #     docker images              
-      #     echo -e "\e[32mVistazo general\e[0m"
-      #     docker ps -a 
-      #     echo -e "\e[32mInicializador...\e[0m"
-      #     docker run -d --name mi-contenedor -p 8080:8080 mi-app:1.0.0                        
-      #     echo -e "\e[32mVistazo general\e[0m"
-      #     docker ps -a  
-      #     sleep 20
-      #     echo -e "\e[32mdetener contendor\e[0m"
-      #     docker ps -a
-      #     echo -e "\e[32mps normal\e[0m"
-      #     docker ps
-      #     curl http://localhost:8080
-
-
-  deploy:
-    permissions:
-      actions: read
-      contents: read
-      id-token: write
-    runs-on: ubuntu-latest
-    needs: [build-and-push]
-    steps:
-      # Checks out the repository this file is in
-      - uses: actions/checkout@v4
-
-      # Logs in with your Azure credentials
-      - name: Azure Login
-        uses: Azure/login@v2.3.0
-        with:
-          creds: ${{ secrets.SP_AZURE }}          
-
-      # Use kubelogin to configure your kubeconfig for Azure auth
-      - name: Set up kubelogin for non-interactive login
-        uses: azure/use-kubelogin@v1
-        with:
-          kubelogin-version: 'v0.0.25'
-
-      # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
-      - name: Get K8s context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
-          admin: 'false'
-          use-kubelogin: 'true'
-
-      - name: Create namespace if not exists
+      - name: Build & Push image
+        env:
+          ACR_REGISTRY: devopspruebatecylab.azurecr.io
+          ACR_REPOSITORY: minimalapi
+          IMAGE_TAG: ${{ needs.extract-version.outputs.app_version }}      
         run: |
-          kubectl get namespace mbco-reto-ns || kubectl create namespace mbco-reto-ns
+          echo -e "\e[32mBuild componente\e[0m"
+          docker build -t $ACR_REGISTRY/$ACR_REPOSITORY:$IMAGE_TAG .
+          # echo -e "\e[32mPush componente\e[0m"
+          # docker push $ACR_REGISTRY/$ACR_REPOSITORY:$IMAGE_TAG
+
+      - name: Check docker
+        env:
+          ACR_REGISTRY: devopspruebatecylab.azurecr.io
+          ACR_REPOSITORY: minimalapi
+          IMAGE_TAG: ${{ needs.extract-version.outputs.app_version }}      
+        run: |
+          echo -e "\e[32mBuild componente\e[0m"
+          docker build -t mi-app:1.0.0 .
+          docker build -t mi-app-bkp:1.0.0 . 
+          echo -e "\e[32mDockerimages\e[0m"
+          docker images              
+          echo -e "\e[32mVistazo general\e[0m"
+          docker ps -a 
+          echo -e "\e[32mInicializador...\e[0m"
+          docker run -d --name mi-contenedor -p 8080:8080 mi-app:1.0.0                        
+          echo -e "\e[32mVistazo general\e[0m"
+          docker ps -a  
+          sleep 20
+          echo -e "\e[32mdetener contendor\e[0m"
+          docker ps -a
+          echo -e "\e[32mps normal\e[0m"
+          docker ps
+          curl http://localhost:8080
 
 
-      # Deploys application based on given manifest file
-      - name: Deploys application
-        uses: Azure/k8s-deploy@v4
-        with:
-          action: deploy
-          namespace: mbco-reto-ns 
-          manifests: |
-              ./manifiestos/deployment.yaml
-              ./manifiestos/service.yaml
-              ./manifiestos/ingress.yaml
+  # deploy:
+  #   permissions:
+  #     actions: read
+  #     contents: read
+  #     id-token: write
+  #   runs-on: ubuntu-latest
+  #   needs: [build-and-push]
+  #   steps:
+  #     # Checks out the repository this file is in
+  #     - uses: actions/checkout@v4
 
-              ./manifiestos/hpa.yaml
+  #     # Logs in with your Azure credentials
+  #     - name: Azure Login
+  #       uses: Azure/login@v2.3.0
+  #       with:
+  #         creds: ${{ secrets.SP_AZURE }}          
+
+  #     # Use kubelogin to configure your kubeconfig for Azure auth
+  #     - name: Set up kubelogin for non-interactive login
+  #       uses: azure/use-kubelogin@v1
+  #       with:
+  #         kubelogin-version: 'v0.0.25'
+
+  #     # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
+  #     - name: Get K8s context
+  #       uses: azure/aks-set-context@v3
+  #       with:
+  #         resource-group: ${{ env.RESOURCE_GROUP }}
+  #         cluster-name: ${{ env.CLUSTER_NAME }}
+  #         admin: 'false'
+  #         use-kubelogin: 'true'
+
+  #     - name: Create namespace if not exists
+  #       run: |
+  #         kubectl get namespace mbco-reto-ns || kubectl create namespace mbco-reto-ns
+
+
+  #     # Deploys application based on given manifest file
+  #     - name: Deploys application
+  #       uses: Azure/k8s-deploy@v4
+  #       with:
+  #         action: deploy
+  #         namespace: mbco-reto-ns 
+  #         manifests: |
+  #             ./manifiestos/deployment.yaml
+  #             ./manifiestos/service.yaml
+  #             ./manifiestos/ingress.yaml
+
+  #             ./manifiestos/hpa.yaml
